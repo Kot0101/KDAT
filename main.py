@@ -5,7 +5,7 @@ import sys
 os.environ['SDL_RENDER_DRIVER'] = 'software'
 os.environ['SDL_VIDEO_GL_DRIVER'] = ''
 os.environ['SDL_VIDEO_GLES_DRIVER'] = ''
-
+Й
 # Заставляем SDL2 не инициализировать 3D-контекст вообще
 os.environ['SDL_VIDEO_EGL_ALLOW_EGLATTRS'] = '0'
 
