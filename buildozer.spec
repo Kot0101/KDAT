@@ -13,11 +13,11 @@ source.dir = .
 # Расширения файлов, которые Buildozer упакует внутрь APK
 source.include_exts = py,png,jpg,jpeg,ogg,wav,ttf,txt,json
 
-# Версия твоей игры
-version = 0.2
+# ВАЖНО: Изменили на 0.3, чтобы заставить GitHub Actions полностью сбросить старый кэш библиотек
+version = 0.3
 
-# ВАЖНО: Фиксируем Python 3.10, рабочий pygame-ce и системные библиотеки для Android
-requirements = python3==3.10.11,pygame-ce,jnius,android
+# ВАЖНО: Убрали жесткую старую версию Python. Теперь ставится современный стабильный python3
+requirements = python3,pygame-ce,jnius,android
 
 # Ориентация экрана (landscape - альбомная, portrait - портретная)
 orientation = landscape
@@ -31,7 +31,7 @@ android.minapi = 21
 android.sdk = 33
 android.ndk = 25c
 
-# Архитектуры процессоров, для которых собирается игра
+# Архитектуры процессоров, для которых собирается игра (только 64-бит ARM)
 android.archs = arm64-v8a
 
 # Разрешить бэкап данных приложения встроенными средствами Android
@@ -40,10 +40,8 @@ android.allow_backup = True
 # Цвет фонового экрана при запуске приложения (черный)
 android.presplash_color = #000000
 
-android.meta_data = sdl.audio_driver=dummy
-
-# ВАЖНО: Указываем стабильную ветку p4a ИМЕННО ЗДЕСЬ (внутри секции [app])
-p4a.branch = release-2024.01.21
+# ВАЖНО: Переключаемся на актуальную ветку master, где исправлены краши FORTIFY pthread_mutex на Android 13+
+p4a.branch = master
 
 [buildozer]
 
