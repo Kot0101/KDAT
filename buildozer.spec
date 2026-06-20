@@ -9,7 +9,7 @@ source.include_exts = py,png,jpg,jpeg,ogg,wav,ttf,txt,json
 version = 1.0
 
 # Добавили kivy!
-requirements = python3,kivy,jnius,android
+requirements = python3,kivy,pygame-ce,jnius,android
 
 orientation = landscape
 fullscreen = 1
