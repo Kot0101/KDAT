@@ -14,7 +14,7 @@ source.dir = .
 source.include_exts = py,png,jpg,jpeg,ogg,wav,ttf,txt,json
 
 # Версия твоей игры
-version = 0.1
+version = 0.2
 
 # ВАЖНО: Фиксируем Python 3.10, рабочий pygame-ce и системные библиотеки для Android
 requirements = python3==3.10.11,pygame-ce,jnius,android
@@ -39,6 +39,8 @@ android.allow_backup = True
 
 # Цвет фонового экрана при запуске приложения (черный)
 android.presplash_color = #000000
+
+android.meta_data = sdl.audio_driver=dummy
 
 # ВАЖНО: Указываем стабильную ветку p4a ИМЕННО ЗДЕСЬ (внутри секции [app])
 p4a.branch = release-2024.01.21
