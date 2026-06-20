@@ -5,10 +5,8 @@ package.domain = org.kotoland
 source.dir = .
 source.include_exts = py,png,jpg,jpeg,ogg,wav,ttf,txt,json
 
-# Версия 1.5
-version = 1.5
+version = 3.5
 
-# Чистые требования под Pygame
 requirements = python3,pygame-ce,jnius,android
 
 orientation = landscape
@@ -23,7 +21,12 @@ android.allow_backup = True
 android.presplash_color = #000000
 android.meta_data = android.app.lib_name=main
 
-# Используем стабильную ветку релиза
+# -- НАШИ ИЗМЕНЕНИЯ --
+# Указываем свой манифест
+android.add_src = AndroidManifest.xml
+# Меняем класс, чтобы система не узнала старый PythonActivity
+android.activity_class_name = org.kivy.android.MyActivity
+
 p4a.branch = release-2024.01.21
 
 [buildozer]
