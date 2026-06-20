@@ -6,10 +6,10 @@ source.dir = .
 source.include_exts = py,png,jpg,jpeg,ogg,wav,ttf,txt,json
 
 # Сбрасываем старый кэш
-version = 0.9
+version = 1.0
 
 # Добавили kivy!
-requirements = python3,kivy,pygame-ce,jnius,android
+requirements = python3,kivy,jnius,android
 
 orientation = landscape
 fullscreen = 1
