@@ -5,7 +5,7 @@ title = KDAT
 
 # Имя пакета и домен (должны быть уникальными, без капса и спецсимволов)
 package.name = kdat
-package.domain = org.kot0101
+package.domain = org.kotoland
 
 # Где лежат исходники (точка означает текущую папку)
 source.dir = .
@@ -32,7 +32,7 @@ android.sdk = 33
 android.ndk = 25c
 
 # Архитектуры процессоров, для которых собирается игра
-android.archs = arm64-v8a, armeabi-v7a
+android.archs = arm64-v8a
 
 # Разрешить бэкап данных приложения встроенными средствами Android
 android.allow_backup = True
