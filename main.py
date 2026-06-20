@@ -1,79 +1,81 @@
-import sys
-# Заставляем Pygame думать, что у нас нет экрана и звука (Dummy-режим рендеринга в память)
 import os
-os.environ["SDL_VIDEODRIVER"] = "dummy"
-os.environ["SDL_AUDIODRIVER"] = "dummy"
+import sys
+
+# --- КРИТИЧЕСКИЙ ФИКС ДЛЯ СМАРТФОНОВ OPPO/REALME ---
+# Отключаем сбойный аудиодрайвер, который вешает поток намертво
+os.environ['SDL_AUDIODRIVER'] = 'dummy'
+# Заставляем SDL использовать стандартный софтверный буфер для вывода
+os.environ['SDL_RENDER_DRIVER'] = 'software'
+os.environ['SDL_VIDEO_GLES_DRIVER'] = '0'
 
 import pygame
-from kivy.app import App
-from kivy.clock import Clock
-from kivy.uix.image import Image # Используем стандартный Image вместо косячного GraphicsImage
-from kivy.graphics.texture import Texture
 
+# Инициализируем только видео, не трогая аудио-микшер (из-за него и виснет!)
+pygame.display.init()
+
+# Разрешение
 WIDTH, HEIGHT = 1280, 720
 
-class GameScreen(Image):
-    def __init__(self, **kwargs):
-        super(GameScreen, self).__init__(**kwargs)
-        
-        # Инициализируем Pygame программно в памяти
-        pygame.init()
-        self.pg_surface = pygame.Surface((WIDTH, HEIGHT))
-        
-        # Логика игры
-        self.cube_x = WIDTH // 2
-        self.cube_y = HEIGHT // 2
-        self.size = 120
-        self.dragging = False
+# Флаг SCALED спасает на эмуляторах и экранах с вырезами
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SCALED)
+pygame.display.set_caption("KDAT")
 
-        # Создаем пустую текстуру Kivy
-        self.kivy_texture = Texture.create(size=(WIDTH, HEIGHT), colorfmt='rgb')
-        self.texture = self.kivy_texture
+clock = pygame.time.Clock()
 
-        # Игровой цикл на 60 FPS
-        Clock.schedule_interval(self.update_frame, 1.0 / 60.0)
+cube_x = WIDTH // 2
+cube_y = HEIGHT // 2
+size = 100
+speed = 10
 
-    def update_frame(self, dt):
-        # Логика границ
-        self.cube_x = max(self.size // 2, min(self.cube_x, WIDTH - self.size // 2))
-        self.cube_y = max(self.size // 2, min(self.cube_y, HEIGHT - self.size // 2))
+dragging = False
+IS_ANDROID = hasattr(sys, 'getandroidrequestcode')
 
-        # РИСУЕМ НАШ ЛЮБИМЫЙ КВАДРАТ ЧЕРЕЗ PYGAME
-        self.pg_surface.fill((20, 20, 20))
-        pygame.draw.rect(
-            self.pg_surface, 
-            (255, 0, 0), 
-            (self.cube_x - self.size // 2, self.cube_y - self.size // 2, self.size, self.size)
-        )
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-        # Вытаскиваем сырые пиксели из Pygame и отдаем их в Kivy-текстуру
-        raw_pixels = self.pg_surface.get_buffer().raw
-        self.kivy_texture.blit_buffer(raw_pixels, colorfmt='rgb', bufferfmt='ubyte', flipped=True)
-        
-        # Принудительно обновляем экран
-        self.texture_update()
+        # --- ОБРАБОТКА ТАЧА ---
+        elif event.type == pygame.FINGERDOWN:
+            dragging = True
+            cube_x = int(event.dict.get('x', 0.5) * WIDTH)
+            cube_y = int(event.dict.get('y', 0.5) * HEIGHT)
 
-    # Тачи через Kivy
-    def on_touch_down(self, touch):
-        if not self.collide_point(*touch.pos): return False
-        self.dragging = True
-        self.cube_x = int((touch.x / self.width) * WIDTH)
-        self.cube_y = int(((self.height - touch.y) / self.height) * HEIGHT)
-        return True
+        elif event.type == pygame.FINGERUP:
+            dragging = False
 
-    def on_touch_move(self, touch):
-        if self.dragging:
-            self.cube_x = int((touch.x / self.width) * WIDTH)
-            self.cube_y = int(((self.height - touch.y) / self.height) * HEIGHT)
-        return True
+        elif event.type == pygame.FINGERMOTION:
+            if dragging:
+                cube_x = int(event.dict.get('x', 0.5) * WIDTH)
+                cube_y = int(event.dict.get('y', 0.5) * HEIGHT)
 
-    def on_touch_up(self, touch):
-        self.dragging = False
-        return True
+        # --- ОБРАБОТКА МЫШКИ ---
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            dragging = True
+            cube_x, cube_y = event.pos
 
-class KDATApp(App):
-    def build(self):
-        return GameScreen()
+        elif event.type == pygame.MOUSEBUTTONUP:
+            dragging = False
 
-if __name__ == '__main__':
-    KDATApp().run()
+        elif event.type == pygame.MOUSEMOTION:
+            if dragging:
+                cube_x, cube_y = event.pos
+
+    if not IS_ANDROID:
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_a]: cube_x -= speed
+        if keys[pygame.K_d]: cube_x += speed
+        if keys[pygame.K_w]: cube_y -= speed
+        if keys[pygame.K_s]: cube_y += speed
+
+    cube_x = max(size // 2, min(cube_x, WIDTH - size // 2))
+    cube_y = max(size // 2, min(cube_y, HEIGHT - size // 2))
+
+    screen.fill((20, 20, 20))
+    pygame.draw.rect(screen, (255, 0, 0), (cube_x - size // 2, cube_y - size // 2, size, size))
+    
+    pygame.display.flip()
+    clock.tick(60)
+
+pygame.quit()
