@@ -5,11 +5,11 @@ package.domain = org.kotoland
 source.dir = .
 source.include_exts = py,png,jpg,jpeg,ogg,wav,ttf,txt,json
 
-# Сбрасываем старый кэш
-version = 1.0
+# Версия 1.4
+version = 1.4
 
-# Добавили kivy!
-requirements = python3,kivy,pygame-ce,jnius,android
+# ВАЖНО: Никакого pygame здесь! Только чистый Kivy и стандартные либы.
+requirements = python3,kivy,jnius,android
 
 orientation = landscape
 fullscreen = 1
@@ -23,8 +23,8 @@ android.allow_backup = True
 android.presplash_color = #000000
 android.meta_data = android.app.lib_name=main
 
-# Возвращаем master, под Kivy-загрузчиком он работает как танк
-p4a.branch = master
+# Возвращаем стабильный релиз
+p4a.branch = release-2024.01.21
 
 [buildozer]
 log_level = 2
