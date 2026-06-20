@@ -1,9 +1,16 @@
-import pygame
+import os
 import sys
+
+# Принудительно отключаем аппаратный OpenGL драйвер для эмулятора
+os.environ['SDL_RENDER_DRIVER'] = 'software'
+os.environ['SDL_VIDEO_GL_DRIVER'] = ''
+
+import pygame
 
 pygame.init()
 
 WIDTH, HEIGHT = 1280, 720
+# Создаем чистую программную поверхность без OpenGL флагов
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
@@ -60,7 +67,8 @@ while running:
     screen.fill((20, 20, 20))
     pygame.draw.rect(screen, (255, 0, 0), (cube_x - size // 2, cube_y - size // 2, size, size))
     
-    pygame.display.flip()
+    # Для программного рендеринга update() безопаснее и стабильнее, чем flip()
+    pygame.display.update()
     clock.tick(60)
 
 pygame.quit()
