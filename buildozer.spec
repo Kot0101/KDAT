@@ -5,11 +5,11 @@ package.domain = org.kotoland
 source.dir = .
 source.include_exts = py,png,jpg,jpeg,ogg,wav,ttf,txt,json
 
-# Версия 1.4
-version = 1.4
+# Версия 1.5
+version = 1.5
 
-# ВАЖНО: Никакого pygame здесь! Только чистый Kivy и стандартные либы.
-requirements = python3,kivy,jnius,android
+# Чистые требования под Pygame
+requirements = python3,pygame-ce,jnius,android
 
 orientation = landscape
 fullscreen = 1
@@ -23,7 +23,7 @@ android.allow_backup = True
 android.presplash_color = #000000
 android.meta_data = android.app.lib_name=main
 
-# Возвращаем стабильный релиз
+# Используем стабильную ветку релиза
 p4a.branch = release-2024.01.21
 
 [buildozer]
