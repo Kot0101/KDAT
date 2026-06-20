@@ -1,5 +1,18 @@
-import pygame
+import os
 import sys
+
+# --- ЭТОТ БЛОК СТРОГО ДО ИНИЦИАЛИЗАЦИИ PYGAME ---
+# Отключаем продвинутый выбор конфига EGL, который ломает рендеринг в LDPlayer
+os.environ['SDL_ANDROID_TRAP_BACK_BUTTON'] = '1'
+
+import pygame
+
+# Явно задаем стандартные размеры буфера, чтобы эмулятор не сходил с ума
+pygame.display.gl_set_attribute(pygame.GL_DEPTH_SIZE, 16)
+pygame.display.gl_set_attribute(pygame.GL_RED_SIZE, 8)
+pygame.display.gl_set_attribute(pygame.GL_GREEN_SIZE, 8)
+pygame.display.gl_set_attribute(pygame.GL_BLUE_SIZE, 8)
+# ------------------------------------------------
 
 pygame.init()
 
@@ -13,8 +26,6 @@ size = 100
 speed = 10
 
 dragging = False
-
-# Флаг для определения, запущено ли приложение на Android
 IS_ANDROID = hasattr(sys, 'getandroidrequestcode')
 
 running = True
@@ -26,7 +37,6 @@ while running:
         # --- ОБРАБОТКА ТАЧА (АНДРОИД) ---
         elif event.type == pygame.FINGERDOWN:
             dragging = True
-            # Безопасно берем координаты первого касания из словаря события
             cube_x = int(event.dict.get('x', 0.5) * WIDTH)
             cube_y = int(event.dict.get('y', 0.5) * HEIGHT)
 
@@ -62,7 +72,7 @@ while running:
         if keys[pygame.K_s]:
             cube_y += speed
 
-    # Ограничиваем куб, чтобы он не улетал за границы экрана
+    # Ограничение границ экрана
     cube_x = max(size // 2, min(cube_x, WIDTH - size // 2))
     cube_y = max(size // 2, min(cube_y, HEIGHT - size // 2))
 
