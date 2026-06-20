@@ -28,26 +28,26 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --fix-missing git zip unzip autoconf libtool libtool-bin libffi-dev libssl-dev cmake automake pkg-config
           python -m pip install --upgrade pip
-          pip install buildozer "cython<3"
+          pip install "buildozer==1.5.0" "cython<3"
 
       - name: Build APK with Buildozer
         run: |
-          # 1. Готовим cmdline-tools, чтобы Buildozer не падал на поиске путей
+          # 1. Готовим cmdline-tools
           mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools
           cd ~/.buildozer/android/platform/android-sdk/cmdline-tools
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O tools.zip
           unzip -q tools.zip && rm tools.zip
           mv cmdline-tools latest
           
-          # 2. Создаем симлинк, обманывая проверку папки tools/bin
+          # 2. Обманываем проверку путей через симлинк
           mkdir -p ~/.buildozer/android/platform/android-sdk/tools/bin
           ln -s ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager ~/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
           
-          # 3. Принимаем лицензии
+          # 3. Лицензии
           export PATH=$PATH:~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin
           yes | sdkmanager --licenses || true
           
-          # 4. Возвращаемся и шьем билд
+          # 4. Запуск сборки
           cd $GITHUB_WORKSPACE
           buildozer android debug
 

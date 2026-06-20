@@ -34,14 +34,14 @@ android.ndk = 25c
 # Архитектуры процессоров, для которых собирается игра
 android.archs = arm64-v8a, armeabi-v7a
 
-# Разрешения (если игре понадобится интернет — раскомментируй строчку ниже)
-# android.permissions = android.permission.INTERNET
+# Разрешить бэкап данных приложения встроенными средствами Android
+android.allow_backup = True
 
 # Цвет фонового экрана при запуске приложения (черный)
 android.presplash_color = #000000
 
-# Разрешить бэкап данных приложения встроенными средствами Android
-android.allow_backup = True
+# ВАЖНО: Указываем стабильную ветку p4a ИМЕННО ЗДЕСЬ (внутри секции [app])
+p4a.branch = release-2024.01.21
 
 [buildozer]
 
