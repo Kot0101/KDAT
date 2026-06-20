@@ -1,17 +1,25 @@
 import os
 import sys
 
-# Принудительно отключаем аппаратный OpenGL драйвер для эмулятора
+# Полная блокировка аппаратных драйверов на уровне SDL2
 os.environ['SDL_RENDER_DRIVER'] = 'software'
 os.environ['SDL_VIDEO_GL_DRIVER'] = ''
+os.environ['SDL_VIDEO_GLES_DRIVER'] = ''
+
+# Заставляем SDL2 не инициализировать 3D-контекст вообще
+os.environ['SDL_VIDEO_EGL_ALLOW_EGLATTRS'] = '0'
 
 import pygame
 
 pygame.init()
 
+# Фиксируем стандартное игровое разрешение
 WIDTH, HEIGHT = 1280, 720
-# Создаем чистую программную поверхность без OpenGL флагов
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
+# Флаг SCALED создает программную прослойку, которая идеально подходит для эмуляторов
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SCALED)
+pygame.display.set_caption("KDAT")
+
 clock = pygame.time.Clock()
 
 cube_x = WIDTH // 2
@@ -67,8 +75,8 @@ while running:
     screen.fill((20, 20, 20))
     pygame.draw.rect(screen, (255, 0, 0), (cube_x - size // 2, cube_y - size // 2, size, size))
     
-    # Для программного рендеринга update() безопаснее и стабильнее, чем flip()
-    pygame.display.update()
+    # Для SCALED и software режима flip() теперь отработает корректно
+    pygame.display.flip()
     clock.tick(60)
 
 pygame.quit()
