@@ -1,34 +1,28 @@
 import os
 import sys
 
-# --- ЖЕСТКИЕ СИСТЕМНЫЕ ФЛАГИ ДЛЯ БОРЬБЫ С КРАШЕМ МЬЮТЕКСА (FORTIFY) ---
-# Заставляем SDL использовать стабильный буфер аудио-драйвера
+# Настройки звука и совместимости
 os.environ['SDL_AUDIODRIVER'] = 'android'
-# Отключаем внутреннюю фоновую потоковость звука SDL, которая и вызывает trylock на разрушенном mutex
 os.environ['SDL_AUDIO_ALLOW_CHANNELS'] = '0'
-# Включаем ловушку для корректного сворачивания
 os.environ['SDL_ANDROID_TRAP_BACK_BUTTON'] = '1'
-# ---------------------------------------------------------------------
+
+# --- САМЫЙ ВАЖНЫЙ ХАК ДЛЯ ПРЕДОТВРАЩЕНИЯ EGL_NOT_INITIALIZED ---
+# Принудительно заставляем SDL использовать программный рендеринг вместо аппаратного OpenGL
+os.environ['SDL_RENDER_DRIVER'] = 'software'
+os.environ['SDL_VIDEO_GL_DRIVER'] = '' 
+# --------------------------------------------------------------
 
 import pygame
 
-# Явно гасим аудиомикшер перед инициализацией, чтобы потоки не конфликтовали
+# Мягкий запуск подсистем
 pygame.mixer.pre_init(44100, -16, 2, 1024)
-
-# Инициализируем только видео-систему СТРОГО ПЕРВОЙ
-pygame.display.init()
-
-# Ставим безопасные лимиты для буфера графики
-pygame.display.gl_set_attribute(pygame.GL_DEPTH_SIZE, 16)
-pygame.display.gl_set_attribute(pygame.GL_RED_SIZE, 8)
-pygame.display.gl_set_attribute(pygame.GL_GREEN_SIZE, 8)
-pygame.display.gl_set_attribute(pygame.GL_BLUE_SIZE, 8)
+pygame.init()
 
 WIDTH, HEIGHT = 1280, 720
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-# И только ПОСЛЕ создания окна безопасно запускаем всё остальное
-pygame.init()
+# ВАЖНО: Убираем любые скрытые OpenGL флаги. 
+# Используем чистый дефолтный буфер без флагов, который на Android работает как программная поверхность
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 clock = pygame.time.Clock()
 
@@ -82,9 +76,12 @@ while running:
     cube_x = max(size // 2, min(cube_x, WIDTH - size // 2))
     cube_y = max(size // 2, min(cube_y, HEIGHT - size // 2))
 
+    # Очистка экрана и отрисовка
     screen.fill((20, 20, 20))
     pygame.draw.rect(screen, (255, 0, 0), (cube_x - size // 2, cube_y - size // 2, size, size))
-    pygame.display.flip()
+    
+    # Безопасное обновление экрана для программного рендерера
+    pygame.display.update() 
     clock.tick(60)
 
 pygame.quit()
