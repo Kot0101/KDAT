@@ -70,11 +70,25 @@ jobs:
 
       - name: Build with Buildozer
         run: |
-          # Автоматически принимаем абсолютно все лицензии Android SDK
-          mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
+          # 1. Создаем структуру папок для Android SDK, которую ждет Buildozer
+          mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools
+          cd ~/.buildozer/android/platform/android-sdk/cmdline-tools
+          
+          # 2. Скачиваем официальные утилиты командной строки Android SDK
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O tools.zip
+          unzip -q tools.zip && rm tools.zip
+          
+          # 3. Приводим структуру папок к виду cmdline-tools/latest/bin/...
+          mv cmdline-tools latest
+          
+          # 4. Прокидываем путь к sdkmanager в системный PATH
+          export PATH=$PATH:~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin
+          
+          # 5. Принимаем все лицензии
           yes | sdkmanager --licenses || true
           
-          # Запускаем сборку
+          # Возвращаемся в корень проекта и запускаем билд
+          cd $GITHUB_WORKSPACE
           buildozer android debug
 
       - name: Upload APK Artifact
