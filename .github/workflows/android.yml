@@ -70,8 +70,6 @@ jobs:
 
       - name: Build with Buildozer
         run: |
-          # Переопределяем папки, чтобы у Buildozer не было проблем с правами
-          export BUILDOZER_BIN_DIR="./bin"
           buildozer android debug
 
       - name: Upload APK Artifact
