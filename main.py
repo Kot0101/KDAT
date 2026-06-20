@@ -1,4 +1,5 @@
 import pygame
+import sys
 
 pygame.init()
 
@@ -13,46 +14,59 @@ speed = 10
 
 dragging = False
 
+# Флаг для определения, запущено ли приложение на Android
+IS_ANDROID = hasattr(sys, 'getandroidrequestcode')
+
 running = True
 while running:
-
     for event in pygame.event.get():
-
         if event.type == pygame.QUIT:
             running = False
 
-        # палец на телефоне
+        # --- ОБРАБОТКА ТАЧА (АНДРОИД) ---
         elif event.type == pygame.FINGERDOWN:
             dragging = True
+            # Безопасно берем координаты первого касания из словаря события
+            cube_x = int(event.dict.get('x', 0.5) * WIDTH)
+            cube_y = int(event.dict.get('y', 0.5) * HEIGHT)
 
         elif event.type == pygame.FINGERUP:
             dragging = False
 
-        elif event.type == pygame.FINGERMOTION and dragging:
-            cube_x = int(event.x * WIDTH)
-            cube_y = int(event.y * HEIGHT)
+        elif event.type == pygame.FINGERMOTION:
+            if dragging:
+                cube_x = int(event.dict.get('x', 0.5) * WIDTH)
+                cube_y = int(event.dict.get('y', 0.5) * HEIGHT)
 
-        # мышка
+        # --- ОБРАБОТКА МЫШКИ (ПК) ---
         elif event.type == pygame.MOUSEBUTTONDOWN:
             dragging = True
+            cube_x, cube_y = event.pos
 
         elif event.type == pygame.MOUSEBUTTONUP:
             dragging = False
 
-        elif event.type == pygame.MOUSEMOTION and dragging:
-            cube_x, cube_y = event.pos
+        elif event.type == pygame.MOUSEMOTION:
+            if dragging:
+                cube_x, cube_y = event.pos
 
-    keys = pygame.key.get_pressed()
+    # --- УПРАВЛЕНИЕ КЛАВИАТУРОЙ (ТОЛЬКО НА ПК) ---
+    if not IS_ANDROID:
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_a]:
+            cube_x -= speed
+        if keys[pygame.K_d]:
+            cube_x += speed
+        if keys[pygame.K_w]:
+            cube_y -= speed
+        if keys[pygame.K_s]:
+            cube_y += speed
 
-    if keys[pygame.K_a]:
-        cube_x -= speed
-    if keys[pygame.K_d]:
-        cube_x += speed
-    if keys[pygame.K_w]:
-        cube_y -= speed
-    if keys[pygame.K_s]:
-        cube_y += speed
+    # Ограничиваем куб, чтобы он не улетал за границы экрана
+    cube_x = max(size // 2, min(cube_x, WIDTH - size // 2))
+    cube_y = max(size // 2, min(cube_y, HEIGHT - size // 2))
 
+    # Отрисовка
     screen.fill((20, 20, 20))
 
     pygame.draw.rect(
@@ -67,4 +81,4 @@ while running:
     pygame.display.flip()
     clock.tick(60)
 
-pygame.quit()   
+pygame.quit()
