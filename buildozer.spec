@@ -13,10 +13,10 @@ source.dir = .
 # Расширения файлов, которые Buildozer упакует внутрь APK
 source.include_exts = py,png,jpg,jpeg,ogg,wav,ttf,txt,json
 
-# Версия проекта (сбрасывает старый кэш на GitHub Actions)
-version = 0.3
+# ВАЖНО: Смена версии на 0.4 принудительно очистит сломанный кэш на GitHub Actions
+version = 0.4
 
-# Современный стабильный python3 и pygame-ce
+# Чистый и стабильный набор требований для Pygame-CE
 requirements = python3,pygame-ce,jnius,android
 
 # Ориентация экрана (landscape - альбомная, portrait - портретная)
@@ -43,11 +43,8 @@ android.presplash_color = #000000
 # Инициализируем имя нативной библиотеки SDL2 в манифесте
 android.meta_data = android.app.lib_name=main
 
-# ХАРДКОРНЫЙ КОСТЫЛЬ ГРАФИКИ: Передаем переменные среды SDL2 прямо в Java-слой при старте
-android.environment = SDL_RENDER_DRIVER=software,SDL_VIDEO_GL_DRIVER="",SDL_VIDEO_GLES_DRIVER="",SDL_VIDEO_EGL_ALLOW_EGLATTRS="0"
-
-# ВАЖНО: Актуальная ветка master, где исправлены краши FORTIFY на Android 13+
-p4a.branch = master
+# ВАЖНО: Уходим с сырого master на проверенный релизный тег с фиксом pthread_mutex
+p4a.branch = release-2024.01.21
 
 [buildozer]
 
