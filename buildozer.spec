@@ -14,7 +14,7 @@ source.dir = .
 source.include_exts = py,png,jpg,jpeg,ogg,wav,ttf,txt,json
 
 # ВАЖНО: Смена версии на 0.4 принудительно очистит сломанный кэш на GitHub Actions
-version = 0.4
+version = 0.5
 
 # Чистый и стабильный набор требований для Pygame-CE
 requirements = python3,pygame-ce,jnius,android
